@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+  mariadb-chamada:
+    image: mariadb:10.7.8
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mariadb:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOSTS=mariadb-chamada
+
+  # chamada-api:
+  #   image: chamada-nest
+  #   build: ./api
+  #   container_name: chamada-apis
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - DB_HOST=mariadb-chamada
+  #     - DB_USER=root
+  #     - DB_PASS=root
+  #     - DB_DATABASE=chamada
+  #     - DB_SYNC=true
+  #     - AUTH_SECRET=paos745dfbpq9w7hr4lfai7db4
+
+  # chamada-front:
+  #   image: chamada-vite
+  #   build: ./front
+  #   container_name: chamada-front
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - DB_HOST=mariadb-chamada
+  #     - DB_USER=root
+  #     - DB_PASS=root
+  #     - DB_DATABASE=chamada
+

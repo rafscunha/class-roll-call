@@ -1,0 +1,1 @@
+export {ProfessorDto} from './professor.interface'
