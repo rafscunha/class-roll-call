@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import './App.css'
-import MenuTop from './components/menu/Index'
-import NovaChamada from './components/body/nova-chamada'
-import CriarChamada from './components/body/criar-chamada'
-import AuthModal from './components/auth/index'
+import '/app/src/App.css'
+import MenuTop from '/app/src/components/menu'
+import NovaChamada from '/app/src/components/body/nova-chamada'
+import CriarChamada from '/app/src/components/body/criar-chamada'
+import AuthModal from '/app/src/components/auth/index'
 import axios from 'axios'
 
 function App(){

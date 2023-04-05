@@ -20,12 +20,12 @@ import { RejectSocketInterceptor } from './event/ws.interceptor';
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST || '127.0.0.1',
-      port: 3306,
+      port: Number(process.env.DB_PORT || 3306),
       username: process.env.DB_USER || 'root',
       password: process.env.DB_PASS || 'root',
       database: process.env.DB_DATABASE || 'chamada',
       entities: [RollCall, QrCode, Student, Professor],
-      synchronize: process.env.DB_SYNC == "true" ? true : false,
+      synchronize:  false,
     }),
     TypeOrmModule.forFeature([RollCall, QrCode, Student, Professor]),
     JwtModule.register({

@@ -37,6 +37,7 @@
     "mysql2": "^3.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "sync-fetch": "^0.4.2",
     "typeorm": "^0.3.12",
     "uuid": "^9.0.0"
   },

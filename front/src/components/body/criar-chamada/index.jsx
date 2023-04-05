@@ -5,8 +5,9 @@ import axios from 'axios'
 
 
 function CriarChamada(props){
+    const BASE_API = import.meta.env.VITE_BASE_API
     function createNewRollCall(){
-        axios.post('http://localhost:3000/admin/rollCall',{},{
+        axios.post(`${BASE_API}/admin/rollCall`,{},{
             headers:{
                 'Authorization': `Bearer ${props.jwt}`
             }

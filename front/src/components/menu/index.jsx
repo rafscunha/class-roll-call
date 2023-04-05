@@ -1,6 +1,6 @@
 
 import React from 'react'
-import './style.css'
+import '/app/src/components/menu/style.css'
 import {
     Menu,
     MenuButton,

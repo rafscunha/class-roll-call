@@ -1,8 +1,11 @@
-import { Card, CardHeader, CardBody, CardFooter, Heading } from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, Link } from '@chakra-ui/react'
 import { Image } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react';
 import { Divider } from '@chakra-ui/react';
 import useWebSocket from 'react-use-websocket';
+import * as fetchSync from 'sync-fetch';
+import { CheckIcon } from '@chakra-ui/icons'
+
 
 import {
     Table,
@@ -21,59 +24,63 @@ import axios from 'axios';
 
 
 function NovaChamada(props){
+    const BASE_API = import.meta.env.VITE_BASE_API
+    const BASE_WSS = import.meta.env.VITE_BASE_WSS
+    const LOCATION_URL = window.location.href
 
-
-
-    const [socketUrl, setSocketUrl] = useState('ws://localhost:3000')
+    const [socketUrl, setSocketUrl] = useState(BASE_WSS)
     const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl,{
         queryParams:{
             'X-ROLLCALL-ID':props.rollCallId
         }
     }, true)
-    const [urlQrCode, setUrlQrCode] = useState("https://api.qrserver.com/v1/create-qr-code/?data=www.google.com&amp;size=300x300")
+    const [urlQrCode, setUrlQrCode] = useState(null)
     const [studentsAssigned, setStudentsAssigned] = useState([]);
     const [rollCallOpen, setRollCallOpen] = useState(false)
     const [elementQrCode, setElementQrCode] = useState()
+    const [currentUri, setCurrentUri] = useState(null)
 
 
 
     useEffect(()=>{
         if(lastMessage?.data){
             const newMessage = JSON.parse(lastMessage?.data)
-            console.log(newMessage)
-            let url = null
+            //console.log(newMessage)
             switch(newMessage.type){
                 case "NewQrCode":
-                    console.log("NewQrCode>>",newMessage.data.id)
+                    //console.log("NewQrCode>>",newMessage.data.id)
+                    setCurrentUri(`${LOCATION_URL}assign/${newMessage.data.id}`)
+                    //setUrlQrCode(`https://api.qrserver.com/v1/create-qr-code/?data=${currentUri}&amp;size=300x300`)
                     setRollCallOpen(true)
-                    url = `http://localhost:3000/${newMessage.data.id}`
-                    setUrlQrCode(`https://api.qrserver.com/v1/create-qr-code/?data=${url}&amp;size=300x300`)
                     break;
                 
                 case "AssignRollCall":
-                    console.log("AssignRollCall>>",newMessage.data)
+                    //console.log("AssignRollCall>>",newMessage.data)
                     const data = newMessage.data
                     setStudentsAssigned([{
                         name: data.name,
                         ra: data.ra,
                         assigned: data.assignIn
                     },...studentsAssigned])
-                    url = `http://localhost:3000/${data.newQrCode}`
-                    setUrlQrCode(`https://api.qrserver.com/v1/create-qr-code/?data=${url}&amp;size=300x300`)
+                    setCurrentUri(`${LOCATION_URL}assign/${data.newQrCode}`)
+                    
                     break;
                 
                 case "CloseRollCall":
-                    console.log("CloseRollCall>>",newMessage.data)
+                    //console.log("CloseRollCall>>",newMessage.data)
                     setRollCallOpen(false)
                     break;
             }
         }
     },[lastMessage])
 
+    useEffect(()=>{
+        setUrlQrCode(`https://api.qrserver.com/v1/create-qr-code/?data=${currentUri}&amp;size=300x300`)
+    },[currentUri])
 
     function buttaoClick(){
-        console.log(`Bearer ${props.jwt}`)
-        axios.patch(`http://localhost:3000/admin/rollCall/${props.rollCallId}`,{},{
+        //console.log(`Bearer ${props.jwt}`)
+        axios.patch(`${BASE_API}/admin/rollCall/${props.rollCallId}`,{},{
             headers:{
                 'Authorization': `Bearer ${props.jwt}`
             }
@@ -96,8 +103,15 @@ function NovaChamada(props){
                 <CardBody align='center'>
                     <Heading size='sm' mt='10px'>{props.rollCallId}</Heading>
                     <Heading size='sm' textTransform='uppercase'> 30 de Abril de 2013 </Heading>
-                    <Image src={urlQrCode} pt="20px" pb="20px" href="{urlQrCode}"/>
-                    <Button colorScheme='blue' onClick={buttaoClick}>Finalizar Chamada</Button>
+                    <Image src={urlQrCode} pt="20px" pb="20px" href={urlQrCode}/>
+                    <Stack direction='row' spacing={4} align="center" display="flex">
+                        <Link href={currentUri} style={{ textDecoration: 'none' }} isExternal>
+                            <Button leftIcon={<CheckIcon />} colorScheme='whatsapp' variant='solid' align="center">
+                                Assinar Manual
+                            </Button>
+                        </Link>
+                        <Button colorScheme='blue' onClick={buttaoClick} align="center">Finalizar Chamada</Button>
+                    </Stack>
                 </CardBody>
             )
         }else{
@@ -105,7 +119,7 @@ function NovaChamada(props){
                 <Tag size='lg' key='key' variant='solid' colorScheme='red' mb="20px">Chamada Encerrada</Tag>
             )
         }
-    },[rollCallOpen])
+    },[rollCallOpen, urlQrCode, lastMessage])
 
 
     return (
@@ -126,20 +140,13 @@ function NovaChamada(props){
                     </Thead>
                     <Tbody>
                         {studentsAssigned.map((student)=>(
-                            <Tr>
-                                <Td>{student.name}</Td>
-                                <Td>{student.ra}</Td>
-                                <Td>{student.assigned}</Td>
+                            <Tr id={`id-tr${student.ra}`}>
+                                <Td id={`id-td-name-${student.ra}`}>{student.name}</Td>
+                                <Td id={`id-td-ra-${student.ra}`}>{student.ra}</Td>
+                                <Td id={`id-td-assigned-${student.ra}`}>{student.assigned}</Td>
                             </Tr>
                         ))}
                     </Tbody>
-                    <Tfoot>
-                    <Tr>
-                        <Th>To convert</Th>
-                        <Th>into</Th>
-                        <Th isNumeric>multiply by</Th>
-                    </Tr>
-                    </Tfoot>
                 </Table>
             </TableContainer>
 
