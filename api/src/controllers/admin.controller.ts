@@ -35,12 +35,12 @@ export class AdminController {
     }
 
     @Get("rollCall/list")
-    getListOfRollCall(){
+    async getListOfRollCall(){
       return true
     }
 
     @Get("rollCall/list/:rollCallId")
-    getListOfStudentsAssigned(){
-      return true
+    async getListOfStudentsAssigned(@Param() {rollCallId}:{rollCallId: string}){
+      return await this.adminService.getCallableStudentsAssign(rollCallId)
     }
 }

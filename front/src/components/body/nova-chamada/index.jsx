@@ -41,6 +41,21 @@ function NovaChamada(props){
     const [currentUri, setCurrentUri] = useState(null)
 
 
+    async function getStudentsAssigned(){
+        console.log("JWT",props.jwt)
+        axios.get(`${BASE_API}/admin/rollCall/list/${props.rollCallId}`,{
+            headers:{
+                'Authorization': `Bearer ${props.jwt}`
+            }
+        })
+        .then((response)=>{
+            setStudentsAssigned(response.data.students)
+        })
+        .catch((error)=>{
+            console.error(error)
+        })
+    }
+
 
     useEffect(()=>{
         if(lastMessage?.data){
@@ -50,6 +65,7 @@ function NovaChamada(props){
                 case "NewQrCode":
                     //console.log("NewQrCode>>",newMessage.data.id)
                     setCurrentUri(`${LOCATION_URL}assign/${newMessage.data.id}`)
+                    getStudentsAssigned()
                     //setUrlQrCode(`https://api.qrserver.com/v1/create-qr-code/?data=${currentUri}&amp;size=300x300`)
                     setRollCallOpen(true)
                     break;

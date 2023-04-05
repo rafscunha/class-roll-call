@@ -47,8 +47,8 @@ export class AuthService implements CanActivate {
         try {
           const payload = await this.jwtService.verifyAsync(token);
           request['user'] = payload;
-        } catch {
-          console.log("deu ruim")
+        } catch(error) {
+          console.log(error)
           throw new UnauthorizedException();
         }
         return true;

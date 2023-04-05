@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import {  MoreThan, Repository } from 'typeorm';
+import {  IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {QrCode, RollCall, Professor, Student} from '../entities'
 import * as bcrypt from 'bcrypt';
@@ -13,7 +13,7 @@ export class AdminService {
     @InjectRepository(QrCode)
     private readonly repositoryQrCode : Repository<QrCode>,
     @InjectRepository(Student)
-    private readonly Student : Repository<Student>,
+    private readonly repositoryStudent : Repository<Student>,
     @InjectRepository(Professor)
     private readonly repositoryProfessor : Repository<Professor>,
     @InjectRepository(RollCall)
@@ -94,21 +94,28 @@ export class AdminService {
 
   async getCallableStudentsAssign(rollCallId: string){
     const callable = await this.repositoryRollCall.findOneBy({id: rollCallId})
-    const select = await this.repositoryQrCode.createQueryBuilder()
-    .orderBy("qrCode.assigned", "DESC")
-    .select("student.name", "name")
-    .addSelect("student.ra", "ra")
-    .addSelect("qrCode.assigned", "assigned")
-    .from("qrCode", "qrCode")
-    .innerJoinAndSelect("student", "student", "student.id = qrCode.userId")
-    .where("student.id = :rollCallId",{rollCallId: rollCallId})
-    .getMany()
+    let students = []
+    let qrCodes = await this.repositoryQrCode.find({
+      where: {
+        rollCallId:rollCallId,
+        userId: Not(IsNull())
+      },
+      order: {assigned:"DESC"}
+    })
+    for(const qrCode of qrCodes){
+      const student = await this.repositoryStudent.findOneBy({id:qrCode.userId})
+      students.push({
+        name:student.name,
+        ra: student.ra,
+        assigned: `${qrCode.assigned.getHours()}:${qrCode.assigned.getMinutes()}:${qrCode.assigned.getSeconds()}`
+      })
+    }
     return {
-        id:rollCallId,
-        isOpen:callable.isOpen,
-        openIn: callable.openIn,
-        closedIn: callable.closedIn,
-        students:select
+      id:rollCallId,
+      isOpen:callable.isOpen,
+      openIn: callable.openIn,
+      closedIn: callable.closedIn,
+      students: students
     }
   }
 }
