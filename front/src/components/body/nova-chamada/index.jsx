@@ -1,4 +1,14 @@
-import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, Link } from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, Stack, Link,Table,
+    Thead,
+    Tbody,Tr,
+    Th,
+    Td,Tfoot,
+    TableCaption,
+    TableContainer,
+    Button,
+    Tag,
+    Heading
+ } from '@chakra-ui/react'
 import { Image } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react';
 import { Divider } from '@chakra-ui/react';
@@ -7,19 +17,6 @@ import * as fetchSync from 'sync-fetch';
 import { CheckIcon } from '@chakra-ui/icons'
 
 
-import {
-    Table,
-    Thead,
-    Tbody,
-    Tfoot,
-    Tr,
-    Th,
-    Td,
-    TableCaption,
-    TableContainer,
-    Button,
-    Tag
-  } from '@chakra-ui/react'
 import axios from 'axios';
 
 
@@ -41,8 +38,11 @@ function NovaChamada(props){
     const [currentUri, setCurrentUri] = useState(null)
 
 
+    useEffect(()=>{
+        getStudentsAssigned()
+    },[])
+
     async function getStudentsAssigned(){
-        console.log("JWT",props.jwt)
         axios.get(`${BASE_API}/admin/rollCall/list/${props.rollCallId}`,{
             headers:{
                 'Authorization': `Bearer ${props.jwt}`
@@ -60,18 +60,13 @@ function NovaChamada(props){
     useEffect(()=>{
         if(lastMessage?.data){
             const newMessage = JSON.parse(lastMessage?.data)
-            //console.log(newMessage)
             switch(newMessage.type){
                 case "NewQrCode":
-                    //console.log("NewQrCode>>",newMessage.data.id)
                     setCurrentUri(`${LOCATION_URL}assign/${newMessage.data.id}`)
-                    getStudentsAssigned()
-                    //setUrlQrCode(`https://api.qrserver.com/v1/create-qr-code/?data=${currentUri}&amp;size=300x300`)
                     setRollCallOpen(true)
                     break;
                 
                 case "AssignRollCall":
-                    //console.log("AssignRollCall>>",newMessage.data)
                     const data = newMessage.data
                     setStudentsAssigned([{
                         name: data.name,
@@ -83,7 +78,6 @@ function NovaChamada(props){
                     break;
                 
                 case "CloseRollCall":
-                    //console.log("CloseRollCall>>",newMessage.data)
                     setRollCallOpen(false)
                     break;
             }
@@ -95,7 +89,6 @@ function NovaChamada(props){
     },[currentUri])
 
     function buttaoClick(){
-        //console.log(`Bearer ${props.jwt}`)
         axios.patch(`${BASE_API}/admin/rollCall/${props.rollCallId}`,{},{
             headers:{
                 'Authorization': `Bearer ${props.jwt}`

@@ -14,6 +14,10 @@ export class AdminController {
     private readonly adminService: AdminService
     ) {}
 
+    @Get("ping")
+    ping(){
+      return null
+    }
 
     @Post("professor")
     async createProfessor(
@@ -35,8 +39,8 @@ export class AdminController {
     }
 
     @Get("rollCall/list")
-    async getListOfRollCall(){
-      return true
+    async getListOfRollCall(@Request() req){
+      return await this.adminService.getCallableList(req.user.period)
     }
 
     @Get("rollCall/list/:rollCallId")

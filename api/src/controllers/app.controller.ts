@@ -16,6 +16,11 @@ export class AppController {
   //   return {uuid:uuid}
   // }
 
+  @Get("ping")
+  ping(){
+    return null
+  }
+
   @Post("assign")
   async createUser(
     @Body() {name, ra}:{name:string, ra:number},

@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, {useEffect} from 'react'
 import '/app/src/components/menu/style.css'
 import {
     Menu,
@@ -17,7 +17,14 @@ import {
 import { IconButton } from '@chakra-ui/react';
 import { Box } from "@chakra-ui/react"
 
-function MenuTop(){
+function MenuTop(props){
+
+
+
+    const select = (event)=>{
+        props.setOption(event.target.value)
+    }
+
     return (
         <Box bg='#2a69ac' w='100%' p={4} color='white' border='2px'>
 
@@ -30,15 +37,15 @@ function MenuTop(){
                 
                 />
                 <MenuList bg='#2a69ac'>
-                    <MenuItem icon={<CalendarIcon />} command='⌘T' bg='#2a69ac' hover="#153e75">
+                    <MenuItem icon={<CalendarIcon />} command='⌘T' bg='#2a69ac' hover="#153e75" value="NewRollCall" onClick={select}>
                         Nova Chamada
                     </MenuItem>
-                    <MenuItem icon={<Search2Icon />} command='⌘N' bg='#2a69ac'>
-                        Buscar Chamada
+                    <MenuItem icon={<Search2Icon />} command='⌘N' bg='#2a69ac' value="ListOfRollCalls" onClick={select}>
+                        Listar Chamada
                     </MenuItem>
-                    <MenuItem icon={<AddIcon />} command='⌘⇧N' bg='#2a69ac'>
+                    {/* <MenuItem icon={<AddIcon />} command='⌘⇧N' bg='#2a69ac'>
                         Cadastrar Turma
-                    </MenuItem>
+                    </MenuItem> */}
                 </MenuList>
             </Menu>
         </Box>

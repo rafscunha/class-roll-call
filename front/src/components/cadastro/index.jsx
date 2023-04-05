@@ -20,9 +20,7 @@ function AssignRollCall(props){
     const [toRegister, setToRegister] = useState(null)
 
     useEffect(()=>{
-        //console.log("registerStudent>>",name, ra)
         if (!!name && !!ra){
-            console.log("entoru")
             axios.post(`${BASE_API}/assign`,{
                 name: name,
                 ra: ra
@@ -46,13 +44,11 @@ function AssignRollCall(props){
     function assignRollCall(force = false){
         if (!window.mobilecheck() && !force){
             localStorage.clear()
-            console.log("verificou... é desktop")
         }
         const studentId = localStorage.getItem("STUDENT-ID")
         
 
         if(!!studentId){
-            //console.log("verificou...", studentId)
             axios.get(`${BASE_API}/assign/${id}/${studentId}`,{
                 studentId:studentId
             })

@@ -81,15 +81,10 @@ export class AdminService {
 
 
   async getCallableList(period: number){
-    const select = await this.repositoryRollCall.createQueryBuilder()
-    .orderBy("rollCall.date", "DESC")
-    .select("rollCall.id", "id")
-    .addSelect("rollCall.date", "date")
-    .addSelect("rollCall.isOpen", "isOpen")
-    .from("rollCall", "rollCall")
-    .where("rollCall.period = :period", {period: period})
-    .getMany()
-    return select
+    return await this.repositoryRollCall.find({
+      where:{period:period},
+      order: {openIn: "DESC"}
+    })
   }
 
   async getCallableStudentsAssign(rollCallId: string){
