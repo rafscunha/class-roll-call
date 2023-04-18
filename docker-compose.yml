@@ -22,7 +22,7 @@ services:
     image: api-nest
     build: ./api
     ports:
-      - 3000:3000
+      - 3001:3000
     environment:
       - DB_HOST=mariadb
       - DB_USER=root

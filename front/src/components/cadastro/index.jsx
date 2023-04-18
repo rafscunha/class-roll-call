@@ -85,6 +85,9 @@ function AssignRollCall(props){
     }
 
     function setErrorAssign(error){
+        if (error == "Student not Found"){
+            localStorage.clear()
+        }
         setContent(
             <AbsoluteCenter  p='4' color='white' axis='both' borderRadius='md'>
                 <Tag size='lg' key='key' variant='solid' colorScheme='red' mb="20px">{error}</Tag>
